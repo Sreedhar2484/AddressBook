@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.io.Reader;
 
 public class AddressBook implements AddressBookIF {
     Scanner scannerObject = new Scanner(System.in);
@@ -230,38 +231,46 @@ public class AddressBook implements AddressBookIF {
                 break;
         }
     }
-    public void writeToAddressBookFile() {
-        String bookName = this.getAddressBookName();
-        String fileName = bookName+"BookName.txt";
+     public class OpenCSVReader{
+        private static final String CSV_FILE = "./";
+        public static void main(String args[], Object reader) throws IOException{
+            try{
+                Reader reader = Files.newBufferedReader(Paths.get(CSV_FILE));
 
-        StringBuffer addressBookBuffer = new StringBuffer();
-        contactList.values().stream().forEach(contact -> {
-            String personDataString = contact.toString().concat("\n");
-            addressBookBuffer.append(personDataString);
-        });
-        try {
-            Files.write(Paths.get(fileName), addressBookBuffer.toString().getBytes());
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    public List<String> readDataFromFile() {
-        List<String> addressBookList = new ArrayList<String>();
-        String bookName = this.getAddressBookName();
-        String fileName = bookName+"BookName.txt";
-        System.out.println("Reading from : "+fileName+"\n");
-        try {
-            Files.lines(new File(fileName).toPath())
-                    .map(line -> line.trim())
-                    .forEach(employeeDetails -> {
-                        System.out.println(employeeDetails);
-                        addressBookList.add(employeeDetails);
-                    });
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
-        return addressBookList;
+            }{
+                CsvToBean<CSVUser> csvToBean = new csvToBeanBuilder(reader).withType(CSVUser.class).withIgnoreLeadingWhiteSpace(true).build();
+                Iterator<csvUser> cavUserIterator = csvToBean.iterator();
+                while(cavUserIterator.hasNext()){
+                    CSVUser csvUser = csvUserIterator.next();
+                    System.out.println("Name : "+ csvToBean.getName());
+                     System.out.println("Email : "+ csvToBean.getEmail());
+                      System.out.println("Country : "+ csvToBean.getCountry());
+                       System.out.println("PhoneNo : "+ csvToBean.getPhoneNo());
+                        System.out.println("======================");
+
+                }
+            }
         }
     }
+
+    public class OpenCSVWriter{
+        private static final String Object = "./";
+        public static void main(String args[]) throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException{
+            try{
+                Writer writer = Files.newBufferedWriter(paths.get(STRING_ARRAY));
+
+            }{
+                StatefulBeanToCsv<MyUser> beanToCsv = new StatefulBeanToCsvBuilder(writer).withQuotechar(CSVWriter.NO_QUOTE_CHARACTER).build();
+
+                List<MyUser> myUsers = new ArrayList<>();
+                myUsers.add(new MyUser("Sreedhar", "nsridhar@gmail.com", "+91 9828782782", "India"));
+                myUsers.add(new MyUser("Srinr", "nsridha@gmail.com", "+91 9828782322", "India"));
+                beanToCsv.write(myUsers);
+
+            }
+        }
+    }
+
+}
+   
+    
